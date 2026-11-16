@@ -3,7 +3,7 @@ import random
 import time
 import uuid
 from pathlib import Path
-
+# Create the `requests` and `responses` folders and the `results.json` file in the same directory as `PRNG.py` if they don’t already exist.
 BASE = Path(__file__).resolve().parent
 REQUESTS = BASE / "requests"
 RESPONSES = BASE / "responses"
