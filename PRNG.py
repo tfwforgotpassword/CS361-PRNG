@@ -55,6 +55,14 @@ def main():
                     raise ValueError(
                         "user_id and category must be non-empty strings."
                     )
+                if retrieval and (user_id not in results):
+                    raise ValueError(
+                        "user_id not found."
+                    )
+                elif retrieval and (category not in results[user_id]):
+                    raise ValueError(
+                        "category not found."
+                    )
 
             except (ValueError, KeyError, TypeError) as error:
                 write_json(response_file, {"error": str(error)})

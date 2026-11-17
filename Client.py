@@ -100,7 +100,8 @@ class PRNGClient:
     def generate_range(self, category, bottom_incl, top_incl):
         if not isinstance(category, str) or not category.strip():
             raise ValueError("category must be a non-empty string.")
-
+        if bottom_incl > top_incl:
+            raise ValueError("bottom value cannot be higher.")
         # Give every request a unique filename.
         request_id = uuid.uuid4().hex
         request_file = REQUESTS / f"{request_id}.json"
