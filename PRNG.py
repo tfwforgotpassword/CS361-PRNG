@@ -43,6 +43,8 @@ def main():
 
                 user_id = request["user_id"]
                 category = request["category"]
+                retrieval = request["retrieval"]
+                range_req = request["range"]
 
                 if (
                     not isinstance(user_id, str)
@@ -59,14 +61,18 @@ def main():
                 request_file.unlink()
                 continue
 
-            number = random.randint(1, 10)
-
+            if type(range_req) == bool:
+                number = random.randint(1, 10)
+            else:
+                number = random.randint(range_req[0], range_req[1])
             # Keep each user's data separate.
             if user_id not in results:
                 results[user_id] = {}
 
             # Update only the requested category for this user.
-            results[user_id][category] = number
+            if not retrieval:
+                results[user_id][category] = number
+            number = results[user_id][category]
             write_json(RESULTS, results)
 
             # Match the response to its original request.

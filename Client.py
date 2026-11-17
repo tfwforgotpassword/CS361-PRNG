@@ -1,6 +1,7 @@
 import json
 import time
 import uuid
+from os.path import exists
 
 from PRNG import REQUESTS, RESPONSES, write_json
 
@@ -27,7 +28,89 @@ class PRNGClient:
 
         write_json(request_file, {
             "user_id": self.user_id,
-            "category": category
+            "category": category,
+            "retrieval": False,
+            "range": False
+        })
+
+        # Wait for the response belonging to this request.
+        deadline = time.monotonic() + 60
+
+        while not response_file.exists():
+            if time.monotonic() >= deadline:
+                raise TimeoutError(
+                    f"No response within 60 seconds. "
+                    f"Request ID: {request_id}"
+                )
+
+            time.sleep(0.2)
+
+        response = json.loads(
+            response_file.read_text(encoding="utf-8")
+        )
+
+        # Remove the response after reading it.
+        response_file.unlink()
+
+        if "error" in response:
+            raise ValueError(response["error"])
+
+        return response["number"]
+
+    def retrieve(self, category):
+        if not isinstance(category, str) or not category.strip():
+            raise ValueError("category must be a non-empty string.")
+
+            # Give every request a unique filename.
+        request_id = uuid.uuid4().hex
+        request_file = REQUESTS / f"{request_id}.json"
+        response_file = RESPONSES / f"{request_id}.json"
+
+        write_json(request_file, {
+            "user_id": self.user_id,
+            "category": category,
+            "retrieval": True,
+            "range": False
+        })
+
+        # Wait for the response belonging to this request.
+        deadline = time.monotonic() + 60
+
+        while not response_file.exists():
+            if time.monotonic() >= deadline:
+                raise TimeoutError(
+                    f"No response within 60 seconds. "
+                    f"Request ID: {request_id}"
+                )
+
+            time.sleep(0.2)
+
+        response = json.loads(
+            response_file.read_text(encoding="utf-8")
+        )
+
+        # Remove the response after reading it.
+        response_file.unlink()
+
+        if "error" in response:
+            raise ValueError(response["error"])
+
+        return response["number"]
+
+    def generate_range(self, category, bottom_incl, top_incl):
+        if not isinstance(category, str) or not category.strip():
+            raise ValueError("category must be a non-empty string.")
+
+        # Give every request a unique filename.
+        request_id = uuid.uuid4().hex
+        request_file = REQUESTS / f"{request_id}.json"
+        response_file = RESPONSES / f"{request_id}.json"
+
+        write_json(request_file, {
+            "user_id": self.user_id,
+            "category": category,
+            "retrieval": False,
+            "range": (bottom_incl, top_incl)
         })
 
         # Wait for the response belonging to this request.
