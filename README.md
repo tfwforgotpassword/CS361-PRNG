@@ -36,17 +36,18 @@ You can reuse the same client for additional calls.
 
 ### Requesting Data
 
-Calling `generate(category)` writes a JSON request containing
-the user ID and category to the `requests/` folder. Each request
-has a unique filename.
+Calling `generate(category)`, `generate(category, bottom_integer,
+top_integer)`, or `retrieve(category)` writes a JSON request 
+containing the user ID and category to the `requests/` folder. 
+Each request has a unique filename.
 
 ### Receiving Data
 
 The microservice processes the request and writes a JSON response
 to the `responses/` folder using the same filename.
 
-The same `generate()` call waits for the response, reads it, and
-returns the random number. No separate receive call is needed.
+The same `generate()` or `retrieve()` call waits for the response, 
+reads it, and returns the random number. No separate receive call is needed.
 If no response arrives within 60 seconds, it raises a `TimeoutError`.
 
 ## Files
@@ -73,10 +74,11 @@ Results are organized by user and category:
     },
     "Alexander": {
         "textadv": 4
+        "jumpscare": 413
     }
 }
 
-A new request replaces only that user's result in the requested category. Other results remain unchanged. The same random number may appear again.
+A new `generate()` request replaces only that user's result in the requested category. Other results remain unchanged. The same random number may appear again.
 
 ## UML
 <img width="1900" height="1830" alt="image" src="https://github.com/user-attachments/assets/ed7b5c62-3d5c-467e-8b4d-037fcbc7deaf" />
